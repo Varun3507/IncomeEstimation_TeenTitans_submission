@@ -25,17 +25,17 @@ export default function Home() {
             <div className="bg-white/70 dark:bg-neutral-800/70 backdrop-blur-sm p-6 rounded-xl shadow-lg border border-neutral-200/50 dark:border-neutral-700/50 transform hover:scale-105 transition-all duration-300 animate-fade-in-up">
               <div className="text-3xl mb-4 text-center">🎯</div>
               <h3 className="text-xl font-semibold text-primary-700 dark:text-primary-400 mb-2 text-center">Accurate</h3>
-              <p className="text-neutral-600 dark:text-neutral-400 text-center">High-precision ML model trained on extensive financial data.</p>
+              <p className="text-neutral-600 dark:text-neutral-400 text-center">High-precision ML model trained on extensive financial data</p>
             </div>
             <div className="bg-white/70 dark:bg-neutral-800/70 backdrop-blur-sm p-6 rounded-xl shadow-lg border border-neutral-200/50 dark:border-neutral-700/50 transform hover:scale-105 transition-all duration-300 animate-fade-in-up delay-100">
               <div className="text-3xl mb-4 text-center">🔒</div>
               <h3 className="text-xl font-semibold text-primary-700 dark:text-primary-400 mb-2 text-center">Secure</h3>
-              <p className="text-neutral-600 dark:text-neutral-400 text-center">Your data is processed securely and never stored.</p>
+              <p className="text-neutral-600 dark:text-neutral-400 text-center">Your data is processed securely and never stored</p>
             </div>
             <div className="bg-white/70 dark:bg-neutral-800/70 backdrop-blur-sm p-6 rounded-xl shadow-lg border border-neutral-200/50 dark:border-neutral-700/50 transform hover:scale-105 transition-all duration-300 animate-fade-in-up delay-200">
               <div className="text-3xl mb-4 text-center">⚡</div>
               <h3 className="text-xl font-semibold text-primary-700 dark:text-primary-400 mb-2 text-center">Fast</h3>
-              <p className="text-neutral-600 dark:text-neutral-400 text-center">Get instant predictions with our optimized pipeline.</p>
+              <p className="text-neutral-600 dark:text-neutral-400 text-center">Get instant predictions with our optimized pipeline</p>
             </div>
           </div>
         </div>

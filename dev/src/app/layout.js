@@ -152,7 +152,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "CSV Prediction App",
+  title: "PayScore",
   description: "Upload CSV files to get predictions using ML models.",
 };
 

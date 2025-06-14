@@ -12,7 +12,7 @@ export const config = {
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end();
 
-  const uploadDir = path.join(process.cwd(), '/uploads');
+  const uploadDir = path.join(process.cwd(), '/upload_s3');
 
   // Ensure /uploads folder exists
   if (!fs.existsSync(uploadDir)) {

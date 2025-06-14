@@ -141,7 +141,7 @@ export default function FileUpload() {
   return (
     <form
       onSubmit={handleUpload}
-      className="w-full bg-white/80 dark:bg-neutral-800/80 backdrop-blur-sm rounded-2xl shadow-lg p-8 space-y-6 animate-fade-in-up border border-neutral-200/50 dark:border-neutral-700/50"
+      className="w-full bg-white/80 dark:bg-neutral-800/80 backdrop-blur-sm rounded-2xl shadow-2xl p-8 space-y-6 animate-fade-in-up border border-neutral-200/50 dark:border-neutral-700/50"
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
@@ -155,13 +155,13 @@ export default function FileUpload() {
       >
         <input
           type="file"
-          accept=".csv"
+          accept=".csv, .xlsx, .xls, xlsm, .xlsb, .ods, .csv, .tsv, .slk, .prn, .dif, .dbf"
           onChange={(e) => setFile(e.target.files[0])}
           className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
           title="Choose a CSV file or drag it here"
         />
         <div className="space-y-4 pointer-events-none">
-          <div className="text-5xl animate-bounce">📊</div>
+          <div className="text-4xl animate-bounce">📊</div>
           <p className="text-neutral-600 dark:text-neutral-400">
             {file ? file.name : 'Drop your CSV file here or click to browse'}
           </p>
@@ -171,7 +171,7 @@ export default function FileUpload() {
       <button
         type="submit"
         disabled={!file}
-        className="w-full bg-gradient-to-r from-primary-600 to-primary-500 text-gray-600 cursor-pointer font-semibold py-3 px-6 rounded-xl shadow-sm hover:from-primary-700 hover:to-primary-600 transform hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed animate-scale-in"
+        className="w-full bg-gradient-to-t from-gray-300 to-gray-50 text-gray-500 cursor-pointer font-semibold py-3 px-6 rounded-2xl shadow-sm hover:from-primary-700 hover:to-primary-600 transform hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed animate-scale-in"
       >
         {file ? 'Upload CSV' : 'Select a File'}
       </button>
