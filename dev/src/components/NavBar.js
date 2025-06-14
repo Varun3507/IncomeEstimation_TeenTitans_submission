@@ -16,13 +16,24 @@
 
 // components/NavBar.js
 'use client';
-// import DarkModeToggle from './DarkMode';
+
+import { useTheme } from 'next-themes';
 
 export default function NavBar() {
-  return (
-    <nav className="w-full px-6 py-4 bg-blue-900 text-white border-b border-gray-200 dark:border-zinc-800 flex justify-between items-center sticky top-0">
-      <h1 className="text-5xl font-bold">Pay<span className='text-blue-500'>Score</span></h1>
-      {/* <DarkModeToggle /> */}
-    </nav>
+  const { theme, setTheme } = useTheme();
+
+  return (    
+    <header className="w-full rounded-b-3xl px-6 py-4 flex justify-between items-center bg-white/80 dark:bg-neutral-900/80 shadow-sm backdrop-blur-sm border-b border-neutral-200 dark:border-neutral-800 z-50 fixed top-0 left-0 ">
+      <h1 className="text-5xl font-extrabold italic text-neutral-600 dark:text-neutral-100">
+        Pay<span className='text-gray-400'>Score</span>
+      </h1>
+      {/* <button
+        onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+        className="p-2 rounded-lg bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors"
+        aria-label="Toggle dark mode"
+      >
+        {theme === 'dark' ? '🌞' : '🌙'}
+      </button> */}
+    </header>
   );
 }

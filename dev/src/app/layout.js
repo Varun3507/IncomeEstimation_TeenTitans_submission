@@ -136,6 +136,7 @@
 
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { ThemeProvider } from "next-themes";
 import NavBar from "@/components/NavBar";
 
 
@@ -157,16 +158,17 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className="bg-white text-black">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col min-h-screen bg-gray-300`}
-      >
-          <NavBar />
-          <div className="flex-grow">{children}</div>
-
-          <footer className="w-full text-center py-4 border-t mt-10 bg-blue-900 text-sm text-white dark:text-gray-400">
-             @2025 PayScore
-          </footer>
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-neutral-50 dark:bg-neutral-900`}>
+        <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
+          <div className="min-h-screen flex flex-col">
+            <NavBar />
+            <main className="flex-1 mt-16">{children}</main>
+            <footer className="w-full text-center py-4 border-t border-neutral-200 dark:border-neutral-800 bg-neutral-50/50 dark:bg-neutral-900/50 backdrop-blur-sm text-sm text-neutral-600 dark:text-neutral-400">
+              &copy;{new Date().getFullYear()} PayScore
+            </footer>
+          </div>
+        </ThemeProvider>
       </body>
     </html>
   );
