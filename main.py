@@ -1,95 +1,74 @@
-# main.py
 import pandas as pd
-import os
-
-# === Step 1: Load Datasets ===
-
-# Paths
-DATA_DIR = "./data"
-TRAIN_FILE = os.path.join(DATA_DIR, "Hackathon_bureau_data_50000.csv")
-TEST_FILE = os.path.join(DATA_DIR, "Hackathon_bureau_data_400.csv")
-COL_MAP_FILE = os.path.join(DATA_DIR, "participant_col_mapping.csv")
-
-# Load datasets
-df_train = pd.read_csv(TRAIN_FILE)
-df_test = pd.read_csv(TEST_FILE)
-df_map = pd.read_csv(COL_MAP_FILE)
-
-print("✅ Data Loaded Successfully.")
-print(f"Training data shape: {df_train.shape}")
-print(f"Test data shape: {df_test.shape}")
-print("\n📌 Sample Training Data:")
-print(df_train.head())
-
-print("\n🧠 Target Column:", "target_income" if "target_income" in df_train.columns else "NOT FOUND")
-print("\n🗂️ Column Mapping:")
-print(df_map.head())
-
-# === Step 2: Preprocessing ===
-
-from sklearn.preprocessing import LabelEncoder, StandardScaler
-from sklearn.impute import SimpleImputer
+from catboost import CatBoostRegressor
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_squared_error, mean_absolute_error
 import numpy as np
-import joblib
 
-# Drop ID column
-df_train = df_train.drop(columns=['id'])
-df_test = df_test.drop(columns=['id'])
+# === Load Preprocessed Data ===
+df = pd.read_csv("D:\Python\Credit_UnderWriting_Model\data\preprocessed_Hackathon_bureau_data_50k.csv")
 
-# Separate target
-target_column = "target_income"
-y_train = df_train[target_column]
-df_train = df_train.drop(columns=[target_column])
+# === Step 1: Ensure 'pin' is treated as categorical ===
+if 'pin code' in df.columns:
+    df['pin code'] = df['pin code'].astype(str)
+    print("✅ 'pin code' set as categorical (string type)")
+else:
+    print("❌ 'pin code' column not found")
 
-# Combine train and test for consistent preprocessing
-df_all = pd.concat([df_train, df_test], axis=0)
 
-# 1. Identify categorical and numerical columns
-cat_cols = df_all.select_dtypes(include=['object']).columns.tolist()
-num_cols = df_all.select_dtypes(include=['float64', 'int64']).columns.tolist()
+# === Step 2: Define Features and Target ===
+X = df.drop(columns=['target'])
+y = df['target']
 
-print(f"📊 Categorical columns: {len(cat_cols)}")
-print(f"📈 Numerical columns: {len(num_cols)}")
+# === Step 3: Identify Categorical Columns ===
+cat_cols = X.select_dtypes(include=['object']).columns.tolist()
+print(f"📊 Categorical columns: {cat_cols}")
 
-# 2. Fill missing values
-num_imputer = SimpleImputer(strategy="mean")
-df_all[num_cols] = num_imputer.fit_transform(df_all[num_cols])
+# Add financial ratios
+X['debt_to_credit'] = X['balance_1'] / X['credit_limit_1'].replace(0, np.nan).fillna(1)
+X['emi_to_income'] = X['total_emi_1'] / y.replace(0, np.nan).fillna(1)
 
-cat_imputer = SimpleImputer(strategy="most_frequent")
-df_all[cat_cols] = cat_imputer.fit_transform(df_all[cat_cols])
+# Extract pin region (first 2 digits)
+if 'pin code' in X.columns:
+    X['pin_region'] = X['pin code'].str[:2]
+    cat_cols.append('pin_region')
+    print("✅ Added 'pin_region' to categoricals")
 
-# 3. Label encode categorical columns
-encoders = {}
-for col in cat_cols:
-    le = LabelEncoder()
-    df_all[col] = le.fit_transform(df_all[col].astype(str))
-    encoders[col] = le
+# === Step 4: Train-Validation Split ===
+X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.2, random_state=42)
 
-# 4. Scale numerical columns
-scaler = StandardScaler()
-df_all[num_cols] = scaler.fit_transform(df_all[num_cols])
+# Train tuned CatBoost
+model = CatBoostRegressor(
+    iterations=2000,
+    learning_rate=0.05,
+    depth=8,
+    cat_features=cat_cols,
+    verbose=200,
+    random_seed=42,
+    early_stopping_rounds=100
+)
+model.fit(X_train, y_train, eval_set=(X_val, y_val))
 
-# Save encoders and scalers
-joblib.dump(scaler, ".\outputs\scaler.pkl")
-joblib.dump(encoders, ".\outputs\encoders.pkl")
+# Evaluate
+y_pred = model.predict(X_val)
+rmse = np.sqrt(mean_squared_error(y_val, y_pred))
+mae = mean_absolute_error(y_val, y_pred)
+within_5000 = 100 * ((abs(y_val - y_pred) <= 5000).mean())
+print(f"RMSE: {rmse:.2f}, MAE: {mae:.2f}, % within ₹5,000: {within_5000:.2f}%")
 
-# 5. Split back to train/test
-X_train = df_all[:len(y_train)]
-X_test = df_all[len(y_train):]
+# RMSE
+rmse = np.sqrt(mean_squared_error(y_val, y_pred))
+print(f"📉 RMSE: {rmse:.2f}")
 
-print("✅ Preprocessing done.")
-print(f"Processed train shape: {X_train.shape}")
-print(f"Processed test shape: {X_test.shape}")
+# MAE
+mae = mean_absolute_error(y_val, y_pred)
+print(f"📉 MAE: {mae:.2f}")
 
-# === TEMPORARY: Missing Value Audit ===
-missing_percent = df_all.isnull().mean() * 100
-high_null = missing_percent[missing_percent > 70].sort_values(ascending=False)
+# % Predictions within ₹5000
+within_5k = np.mean(np.abs(y_pred - y_val) <= 5000) * 100
+print(f"✅ % Predictions within ₹5,000: {within_5k:.2f}%")
 
-print("\n🔍 Columns with >70% missing values:")
-print(high_null)
-
-print("\n📉 All columns missing percentage:")
-print(missing_percent.sort_values(ascending=False))
-
-X_train.to_csv(".\outputs\X_train_processed.csv", index=False)
-X_test.to_csv(".\outputs\X_test_processed.csv", index=False)
+# === Borderline Acceptable Metric Expectations (Assuming Competition Guidelines) ===
+print("\n📌 Target Benchmark (as per competition or industry standards):")
+print("✔ RMSE ≤ 20,000")
+print("✔ MAE ≤ 15,000")
+print("✔ At least 70% predictions within ₹5,000 range (ideal > 75%)")

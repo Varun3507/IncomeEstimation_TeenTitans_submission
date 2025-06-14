@@ -136,7 +136,7 @@
 
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import NavBar from "@/Compo/NavBar";
+import NavBar from "@/components/NavBar";
 
 
 
@@ -165,7 +165,7 @@ export default function RootLayout({ children }) {
           <div className="flex-grow">{children}</div>
 
           <footer className="w-full text-center py-4 border-t mt-10 bg-blue-900 text-sm text-white dark:text-gray-400">
-            &copy; {new Date().getFullYear()} PayScore
+             @2025 PayScore
           </footer>
       </body>
     </html>
