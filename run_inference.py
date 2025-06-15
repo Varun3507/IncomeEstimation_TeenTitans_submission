@@ -1,50 +1,69 @@
 import pandas as pd
 import numpy as np
 import joblib
-from catboost import Pool
-from sklearn.metrics import mean_squared_error, mean_absolute_error
+import time
 
-# === Load preprocessed validation data ===
-val_df = pd.read_csv("./data/preprocessed_Hackathon_bureau_data_400.csv")
+from catboost import CatBoostRegressor
 
-# === Ensure 'pin code' is categorical ===
-if 'pin code' in val_df.columns:
-    val_df['pin code'] = val_df['pin code'].astype(str)
-else:
-    print("❌ 'pin code' column not found")
+# === Load Test Dataset ===
+test_path = "./data/bureau_data_10000_without_target.csv"
+df = pd.read_csv(test_path)
 
-# === Add engineered features (must match training logic) ===
-val_df['debt_to_credit'] = val_df['balance_1'] / val_df['credit_limit_1'].replace(0, np.nan).fillna(1)
-val_df['emi_to_income'] = val_df['total_emi_1'] / val_df['target'].replace(0, np.nan).fillna(1)
-val_df['pin_region'] = val_df['pin code'].str[:2]
+# === Step 1: Load Required Artifacts ===
+model = joblib.load("catboost_model.pkl")
+num_imputer = joblib.load("num_imputer.pkl")
+cat_cols = joblib.load("cat_features_list.pkl")
+high_null_cols = joblib.load("dropped_columns.pkl")
+proxy_model = joblib.load("emi_to_income_proxy_model.pkl")
 
-# === Separate features and target ===
-X_val = val_df.drop(columns=['target'])
-y_val = val_df['target']
+# === Step 2: Preprocess Test Data ===
+# Drop high-null columns
+for col in high_null_cols:
+    if col in df.columns:
+        df.drop(columns=col, inplace=True)
 
-# === Load preprocessing artifacts ===
-num_imputer = joblib.load('num_imputer.pkl')
-dropped_columns = joblib.load('dropped_columns.pkl')
-cat_cols = joblib.load('cat_features_list.pkl')  # use same list as training
-model = joblib.load('catboost_model.pkl')
+# Convert pin code to string and extract region
+if 'pin code' in df.columns:
+    df['pin code'] = df['pin code'].astype(str)
+    df['pin_region'] = df['pin code'].str[:2]
 
-# === Drop same columns as training ===
-X_val.drop(columns=[col for col in dropped_columns if col in X_val.columns], inplace=True)
+# Impute missing numerics
+num_cols = df.select_dtypes(include=[np.number]).columns.tolist()
+df[num_cols] = num_imputer.transform(df[num_cols])
 
-# === Apply numeric imputation ===
-num_cols = X_val.select_dtypes(include=[np.number]).columns.tolist()
-X_val[num_cols] = num_imputer.transform(X_val[num_cols])
+# === Step 3: Predict emi_to_income using proxy model ===
+if 'total_emi_1' not in df.columns:
+    raise ValueError("Missing column: total_emi_1 required to calculate emi_to_income")
 
-# === Predict with CatBoost ===
-val_pool = Pool(data=X_val, cat_features=cat_cols)
-val_pred = model.predict(val_pool)
+proxy_features = df.copy()
+proxy_features.drop(columns=['id'], errors='ignore', inplace=True)  # remove id if present
+emi_to_income_pred = proxy_model.predict(proxy_features)
 
-# === Evaluate ===
-rmse = np.sqrt(mean_squared_error(y_val, val_pred))
-mae = mean_absolute_error(y_val, val_pred)
-within_5000 = 100 * ((abs(y_val - val_pred) <= 5000).mean())
+df['emi_to_income'] = emi_to_income_pred
 
-print(f"\n✅ Validation Metrics:")
-print(f"📉 RMSE: {rmse:.2f}")
-print(f"📉 MAE: {mae:.2f}")
-print(f"✅ % within ₹5,000: {within_5000:.2f}%")
+# Add debt_to_credit ratio
+if 'balance_1' in df.columns and 'credit_limit_1' in df.columns:
+    df['debt_to_credit'] = df['balance_1'] / df['credit_limit_1'].replace(0, np.nan).fillna(1)
+
+# Fill missing categorical values with 'unknown'
+for col in cat_cols:
+    if col in df.columns:
+        df[col] = df[col].fillna("unknown").astype(str)
+
+# === Step 4: Predict Final Income ===
+start_time = time.time()
+final_preds = model.predict(df)
+latency = time.time() - start_time
+
+# === Step 5: Format Submission File ===
+submission_df = pd.DataFrame({
+    "id": df["id"] if "id" in df.columns else np.arange(len(df)),
+    "predicted_income": np.round(final_preds)
+})
+
+submission_filename = "teamname_submissions.csv"
+submission_df.to_csv(submission_filename, index=False)
+
+# === Final Output ===
+print(f"\n✅ Inference complete. Predictions saved to: {submission_filename}")
+print(f"⏱️ Total Prediction Time: {latency:.4f} seconds for {len(df)} samples")

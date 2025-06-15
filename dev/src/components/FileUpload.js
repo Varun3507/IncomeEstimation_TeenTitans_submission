@@ -176,7 +176,7 @@ export default function FileUpload() {
       >
         <input
           type="file"
-          accept=".csv, .xlsx, .xls, xlsm, .xlsb, .ods, .csv, .tsv, .slk, .prn, .dif, .dbf"
+          accept=".csv"
           onChange={(e) => setFile(e.target.files[0])}
           className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
           title="Choose a CSV file or drag it here"

@@ -52,12 +52,12 @@ null_summary = pd.DataFrame({
 }).sort_values(by='Missing %', ascending=False)
 
 # Save null report to txt
-# NULL_REPORT_PATH = r"./outputs/missing_report2.txt"
+# NULL_REPORT_PATH = r"D:\Python\Credit_UnderWriting_Model\outputs\missing_report2.txt"
 # null_summary.to_string(open(NULL_REPORT_PATH, "w"))
 # print(f"📝 Null report saved to: {NULL_REPORT_PATH}")
 
 # Save the preprocessed DataFrame to a CSV
-output_file = "./data/preprocessed_Hackathon_bureau_data_50k.csv" # save inside data name folder
+output_file = ".\data\preprocessed_Hackathon_bureau_data_50k.csv" # save inside data name folder
 df.to_csv(output_file, index=False)
 print(f"✅ Preprocessed data saved to '{output_file}'")
 
