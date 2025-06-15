@@ -15,6 +15,8 @@
 
 
 // components/NavBar.js
+
+
 'use client';
 
 import { useTheme } from 'next-themes';
@@ -23,7 +25,7 @@ export default function NavBar() {
   const { theme, setTheme } = useTheme();
 
   return (    
-    <header className="w-full rounded-b-3xl px-8 py-4 flex justify-between items-center bg-white/80 dark:bg-neutral-900/80 shadow-sm backdrop-blur-sm border-b border-neutral-200 dark:border-neutral-800 z-50 fixed top-0 left-0 ">
+    <header className="w-full rounded-b-3xl px-[26px] py-[23px] flex justify-between items-center bg-white/80 dark:bg-neutral-900/80 shadow-lg backdrop-blur-sm border-b border-neutral-200 dark:border-neutral-800 z-50 fixed top-0 left-0 ">
       <h1 className="text-5xl font-extrabold italic text-neutral-600 dark:text-neutral-100">
         Pay<span className='text-gray-400'>Score</span>
       </h1>

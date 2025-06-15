@@ -81,6 +81,7 @@ export default function FileUpload() {
   const [status, setStatus] = useState('');
   const [result, setResult] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleUpload = async (e) => {
     e.preventDefault();
@@ -92,28 +93,48 @@ export default function FileUpload() {
       return;
     }
 
-    const formData = new FormData();
-    formData.append('file', file);
+   
 
+
+    setIsLoading(true);
     setStatus('Uploading...');
     setResult(null);
 
     try {
-      const res = await fetch('/api/upload', {
+      const formData = new FormData();
+      formData.append('file', file);
+      
+      const res = await fetch('/api/upload_aws', {
         method: 'POST',
         body: formData,
       });
-
       const data = await res.json();
-      if (res.ok) {
-        setStatus('Upload successful ✅');
-        setResult(data.prediction || data.result);
+      
+    //   if (res.ok) {
+    //     setStatus('Upload successful ✅');
+    //     setResult(data.prediction || data.result);
+    //   } else {
+    //     setStatus(`Upload failed ❌: ${data.error || 'Unknown error'}`);
+    //   }
+    // } catch (error) {
+    //   console.error(error);
+    //   setStatus('Upload failed ❌');
+    // }
+
+    if (res.ok && data.key) {
+        setStatus('✅ Upload successful!');
+        const bucket = process.env.S3_INPUT_BUCKET;
+        const region = process.env.AWS_REGION;
+        const url = data.url || `https://${bucket}.s3.${region}.amazonaws.com/${data.key}`;
+        setResult({ key: data.key, url });
       } else {
-        setStatus(`Upload failed ❌: ${data.error || 'Unknown error'}`);
+        setStatus(`❌ Upload failed: ${data.error || 'Unknown error'}`);
       }
     } catch (error) {
       console.error(error);
-      setStatus('Upload failed ❌');
+      setStatus('❌ Upload failed: Network error');
+    } finally {
+      setIsLoading(false);
     }
   };
 

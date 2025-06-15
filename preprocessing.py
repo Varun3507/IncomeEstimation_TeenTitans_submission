@@ -2,8 +2,11 @@ import pandas as pd
 import numpy as np
 
 # Load original data and column mapping
-df = pd.read_csv("D:\Python\Credit_UnderWriting_Model\data\Hackathon_bureau_data_50000.csv")
-col_map = pd.read_csv("D:\Python\Credit_UnderWriting_Model\data\participant_col_mapping.csv")
+df = pd.read_csv("./data/Hackathon_bureau_data_50000.csv")
+col_map = pd.read_csv("./data/participant_col_mapping.csv")
+
+#dropping redundant row
+df.drop(columns=['var_60'], inplace=True)
 
 # Step 1: Rename columns using mapping
 rename_dict = dict(zip(col_map['column_name'], col_map['description']))
@@ -49,12 +52,12 @@ null_summary = pd.DataFrame({
 }).sort_values(by='Missing %', ascending=False)
 
 # Save null report to txt
-NULL_REPORT_PATH = r"D:\Python\Credit_UnderWriting_Model\outputs\missing_report.txt"
-null_summary.to_string(open(NULL_REPORT_PATH, "w"))
-print(f"📝 Null report saved to: {NULL_REPORT_PATH}")
+# NULL_REPORT_PATH = r"./outputs/missing_report2.txt"
+# null_summary.to_string(open(NULL_REPORT_PATH, "w"))
+# print(f"📝 Null report saved to: {NULL_REPORT_PATH}")
 
 # Save the preprocessed DataFrame to a CSV
-output_file = "D:\Python\Credit_UnderWriting_Model\data\preprocessed_Hackathon_bureau_data_50k.csv"
+output_file = "./data/preprocessed_Hackathon_bureau_data_50k.csv" # save inside data name folder
 df.to_csv(output_file, index=False)
 print(f"✅ Preprocessed data saved to '{output_file}'")
 

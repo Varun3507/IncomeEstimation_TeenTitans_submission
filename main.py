@@ -1,11 +1,14 @@
 import pandas as pd
 from catboost import CatBoostRegressor
+from sklearn.impute import SimpleImputer
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error, mean_absolute_error
 import numpy as np
 
+from preprocessing import high_null_cols
+
 # === Load Preprocessed Data ===
-df = pd.read_csv("D:\Python\Credit_UnderWriting_Model\data\preprocessed_Hackathon_bureau_data_50k.csv")
+df = pd.read_csv("./data/preprocessed_Hackathon_bureau_data_50k.csv")
 
 # === Step 1: Ensure 'pin' is treated as categorical ===
 if 'pin code' in df.columns:
@@ -72,3 +75,22 @@ print("\n📌 Target Benchmark (as per competition or industry standards):")
 print("✔ RMSE ≤ 20,000")
 print("✔ MAE ≤ 15,000")
 print("✔ At least 70% predictions within ₹5,000 range (ideal > 75%)")
+
+import joblib
+
+# Save model
+joblib.dump(model, 'catboost_model.pkl')
+print("✅ Model saved as catboost_model.pkl")
+
+# Keep an eye for these file locations
+# Save imputer
+num_cols = X.select_dtypes(include=[np.number]).columns.tolist()
+num_imputer = SimpleImputer(strategy="median")
+num_imputer.fit(X[num_cols])  # Fit on training numeric columns only
+joblib.dump(num_imputer, 'num_imputer.pkl')
+print("✅ Numeric imputer saved as num_imputer.pkl")
+
+# Save dropped column names (you already dropped them during preprocessing)
+joblib.dump(high_null_cols, 'dropped_columns.pkl')
+joblib.dump(cat_cols, "cat_features_list.pkl")
+print("✅ Dropped columns list saved as dropped_columns.pkl")
