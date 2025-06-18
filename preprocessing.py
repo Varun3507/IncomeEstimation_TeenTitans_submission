@@ -57,7 +57,7 @@ null_summary = pd.DataFrame({
 # print(f"📝 Null report saved to: {NULL_REPORT_PATH}")
 
 # Save the preprocessed DataFrame to a CSV
-output_file = ".\data\preprocessed_Hackathon_bureau_data_50k.csv" # save inside data name folder
+output_file = "./data/preprocessed_Hackathon_bureau_data_50k.csv" # save inside data name folder
 df.to_csv(output_file, index=False)
 print(f"✅ Preprocessed data saved to '{output_file}'")
 

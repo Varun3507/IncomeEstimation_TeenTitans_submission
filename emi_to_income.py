@@ -6,7 +6,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error
 
 # === Load Preprocessed Data & Targets ===
-X = pd.read_csv("D:/Python/Credit_UnderWriting_Model/data/preprocessed_Hackathon_bureau_data_50k.csv")
+X = pd.read_csv("./data/preprocessed_Hackathon_bureau_data_50k.csv")
 emi_to_income = joblib.load("emi_to_income_training_targets.pkl")
 
 # === Drop unusable columns (anything that uses target/income directly) ===
