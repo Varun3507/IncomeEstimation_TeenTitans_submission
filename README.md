@@ -34,7 +34,7 @@ Install dependencies using:
 
 ```bash
 pip install -r requirements.txt
-
+```
 # 🏦 Credit Underwriting Model
 
 A machine learning pipeline to estimate EMI-to-Income ratio and underwrite credit applicants using bureau data.  
@@ -44,7 +44,7 @@ Developed during **[Hackathon Name]** by **Team: Teen Titans**
 ---
 
 ## 📁 Directory Structure
-
+```bash
 Credit_UnderWriting_Model/
 ├── data/
 │ ├── bureau_data_10000_without_target.csv
@@ -61,7 +61,7 @@ Credit_UnderWriting_Model/
 ├── requirements.txt
 └── README.md
 
-
+```
 ---
 
 ## 📊 Evaluation Metrics
@@ -92,14 +92,14 @@ import shap
 explainer = shap.TreeExplainer(model)
 shap_values = explainer.shap_values(X_sample)
 shap.summary_plot(shap_values, X_sample)
-
+```
 ## 🧪 Run Inference
 
 To generate predictions:
 
 ```bash
 python scripts/run_inference.py
-
+```
 ## **Steps performed:**
 
 - Loads test CSV and applies preprocessing  
