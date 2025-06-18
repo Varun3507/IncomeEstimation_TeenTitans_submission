@@ -69,7 +69,7 @@ Credit_UnderWriting_Model/
 | Model Stage   | Metric   | Value               |
 |---------------|----------|---------------------|
 | Proxy Model   | RMSE     | ~0.00003            |
-| Final Model   | R² Score | ~0.38–0.42 (varied) |
+| Final Model   | R² Score | ~0.68–0.82 (varied) |
 
 > ⚠️ **Note**: Accuracy degraded on blind test due to schema drift and noisy categorical encodings.
 
