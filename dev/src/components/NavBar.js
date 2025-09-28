@@ -1,22 +1,3 @@
-// 'use client';
-
-// import DarkModeToggle from './DarkMode';
-
-// export default function Navbar() {
-//   return (    
-//     <header className="w-full px-6 py-4 flex justify-between items-center bg-white dark:bg-gray-900 shadow-md dark:shadow-md z-50 fixed top-0 left-0">
-//       <h1 className="text-xl font-bold text-gray-800 dark:text-gray-100">
-//         CreditSense
-//       </h1>
-//       <DarkModeToggle />
-//     </header>
-//   );
-// }
-
-
-// components/NavBar.js
-
-
 'use client';
 
 import { useTheme } from 'next-themes';
